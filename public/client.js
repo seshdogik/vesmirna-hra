@@ -4,7 +4,8 @@ const ctx = canvas.getContext('2d');
 canvas.width = 1600;
 canvas.height = 900;
 
-const socket = new WebSocket(`ws://${window.location.host}`);
+const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+const socket = new WebSocket(`${protocol}://${window.location.host}`);
 
 let gameState = { players: {}, bullets: [], asteroids: [] };
 const keysPressed = {};
