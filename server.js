@@ -1,4 +1,4 @@
-// server.js - beze změn kromě jedné drobnosti
+// server.js - OPRAVENÁ VERZE
 
 const express = require('express');
 const http = require('http');
@@ -67,6 +67,13 @@ function respawnPlayer(player) {
     player.isAlive = true;
 }
 
+// OPRAVA: Přidání chybějící funkce
+function initAsteroids() {
+    for (let i = 0; i < MAX_ASTEROIDS; i++) {
+        asteroids.push(createAsteroid('LARGE'));
+    }
+}
+
 wss.on('connection', (ws) => {
     const clientId = nextId++;
     console.log(`client ${clientId} connecting...`);
@@ -75,7 +82,6 @@ wss.on('connection', (ws) => {
         try {
             const data = JSON.parse(message);
             if (data.type === 'join') {
-                // UPRAVENO: Výchozí jméno a vše na lowercase
                 const name = (data.name.trim().slice(0, 12) || `runner_${clientId}`).toLowerCase();
                 console.log(`client ${clientId} joined as ${name}.`);
                 
@@ -200,6 +206,7 @@ function gameLoop() {
     });
 }
 
+// Spuštění serveru a herní smyčky
 initAsteroids();
 setInterval(gameLoop, 1000 / 60);
 const PORT = process.env.PORT || 3000;
