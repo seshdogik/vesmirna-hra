@@ -1,4 +1,4 @@
-// server.js - VERZE S CHEATEM
+// server.js - VERZE S IP OCHRANOU
 
 const express = require('express');
 const http = require('http');
@@ -40,6 +40,7 @@ let players = {};
 let bullets = [];
 let asteroids = [];
 let nextId = 0;
+const activeIPs = new Set(); // Sledujeme aktivní IP adresy
 
 function createAsteroid(sizeKey = 'LARGE', position = null) {
     const properties = ASTEROID_SIZES[sizeKey];
@@ -63,7 +64,6 @@ function respawnPlayer(player) {
     player.x = Math.random() * GAME_WIDTH;
     player.y = Math.random() * GAME_HEIGHT;
     player.vx = 0; player.vy = 0;
-    // Cheater se respawnuje s plným cheat zdravím
     player.health = player.maxHealth;
     player.isAlive = true;
 }
@@ -74,7 +74,18 @@ function initAsteroids() {
     }
 }
 
-wss.on('connection', (ws) => {
+wss.on('connection', (ws, req) => { // Přidán argument 'req'
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+
+    if (activeIPs.has(ip)) {
+        console.log(`Connection rejected for IP ${ip}: already connected.`);
+        ws.close(1008, "already connected");
+        return;
+    }
+
+    activeIPs.add(ip);
+    console.log(`Connection accepted for IP ${ip}.`);
+
     const clientId = nextId++;
     console.log(`client ${clientId} connecting...`);
 
@@ -89,15 +100,14 @@ wss.on('connection', (ws) => {
                     name, x: Math.random() * GAME_WIDTH, y: Math.random() * GAME_HEIGHT, angle: 0, vx: 0, vy: 0, score: 0, health: 100, maxHealth: 100, isAlive: true, respawnTimer: 0, keys: {}, fireRate: 30, lastShot: 0, bulletDamage: 10,
                 };
                 
-                // NOVÉ: Kontrola a aplikace cheatu
                 if (players[clientId].name.includes('1561596')) {
                     console.log(`*** Cheat activated for player ${players[clientId].name} ***`);
                     const p = players[clientId];
-                    p.fireRate = 10;        // Nejlepší rychlost střelby (nejnižší hodnota)
-                    p.bulletDamage = 100;   // Velké poškození
-                    p.maxHealth = 500;      // Hodně zdraví
-                    p.health = 500;         // Začíná s plným zdravím
-                    p.score = 9999;         // Bonusové skóre pro parádu
+                    p.fireRate = 10;
+                    p.bulletDamage = 100;
+                    p.maxHealth = 500;
+                    p.health = 500;
+                    p.score = 9999;
                 }
 
                 ws.removeListener('message', onFirstMessage);
@@ -107,18 +117,21 @@ wss.on('connection', (ws) => {
     });
 
     ws.on('close', () => {
+        activeIPs.delete(ip); // Uvolníme IP
+        console.log(`IP ${ip} released.`);
+        
         console.log(`client ${clientId} (${players[clientId]?.name}) disconnected.`);
         delete players[clientId];
     });
 });
 
 function createMessageHandler(clientId) {
+    // ... zbytek kódu je beze změny ...
     return function onMessage(message) {
         const player = players[clientId];
         if (!player || !player.isAlive) return;
         try {
             const data = JSON.parse(message);
-            // Cheater si nemůže vylepšovat, už má max
             if (player.name.includes('1561596')) {
                 if (data.type === 'input') {
                     player.keys[data.key] = data.pressed;
@@ -139,6 +152,7 @@ function createMessageHandler(clientId) {
 }
 
 function gameLoop() {
+    // ... zbytek kódu je beze změny ...
     for (const id in players) {
         const p = players[id];
         if (!p.isAlive) {
