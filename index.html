@@ -1,15 +1,107 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asteroids.io</title>
+    <title>void runner</title>
     <style>
-        body { margin: 0; background-color: #000; overflow: hidden; }
-        canvas { display: block; margin: auto; }
+        /* UPRAVENO: edgy font a barvy */
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+        body { 
+            margin: 0; 
+            background-color: #000; 
+            overflow: hidden; 
+            font-family: 'VT323', monospace; /* Pixel font */
+            color: #ccc; 
+        }
+        canvas { 
+            display: none; 
+            margin: auto; 
+            background-color: #000;
+        }
+        
+        /* UPRAVENO: přihlašovací obrazovka */
+        #loginScreen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background-color: transparent;
+            padding: 40px;
+            border: 1px solid #333;
+        }
+        #loginScreen h1 {
+            margin-top: 0;
+            font-size: 48px;
+            color: #fff;
+            letter-spacing: 4px;
+        }
+        #playerNameInput {
+            padding: 10px;
+            font-size: 20px;
+            border: 1px solid #555;
+            background-color: #111;
+            color: #0f0; /* Zelený text jako na starých terminálech */
+            text-align: center;
+            font-family: 'VT323', monospace;
+            text-transform: lowercase; /* Vše malými písmeny */
+        }
+        #playerNameInput::placeholder {
+            color: #555;
+        }
+        #playButton {
+            padding: 10px 30px;
+            font-size: 20px;
+            margin-top: 20px;
+            cursor: pointer;
+            background-color: #111;
+            border: 1px solid #555;
+            color: #ccc;
+            font-family: 'VT323', monospace;
+        }
+        #playButton:hover {
+            background-color: #222;
+            color: #fff;
+        }
+
+        /* UPRAVENO: HUD */
+        #hud {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 22px;
+            display: none;
+            color: #0f0; /* Zelený text */
+            text-shadow: 0 0 5px #0f0; /* Lehká záře */
+        }
+        #hud b {
+            color: #ccc;
+            text-shadow: none;
+        }
     </style>
 </head>
 <body>
+    <!-- UPRAVENO: Texty do angličtiny -->
+    <div id="loginScreen">
+        <h1>void runner</h1>
+        <input type="text" id="playerNameInput" placeholder="enter tag" maxlength="12">
+        <br>
+        <button id="playButton">launch</button>
+    </div>
+
+    <!-- UPRAVENO: Texty do angličtiny -->
+    <div id="hud">
+        <div id="score">score: 0</div>
+        <div id="integrity">integrity: 100/100</div>
+        <br>
+        <div><b>upgrades:</b></div>
+        <div id="upgrade-firerate"></div>
+        <div id="upgrade-damage"></div>
+        <div id="upgrade-health"></div>
+    </div>
+
     <canvas id="gameCanvas"></canvas>
     <script src="/client.js"></script>
 </body>
