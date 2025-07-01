@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>void runner</title>
     <style>
-        /* UPRAVENO: edgy font a barvy */
+        /* ... žádné změny ve stávajících stylech ... */
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
         body { 
             margin: 0; 
             background-color: #000; 
             overflow: hidden; 
-            font-family: 'VT323', monospace; /* Pixel font */
+            font-family: 'VT323', monospace;
             color: #ccc; 
         }
         canvas { 
@@ -20,8 +20,6 @@
             margin: auto; 
             background-color: #000;
         }
-        
-        /* UPRAVENO: přihlašovací obrazovka */
         #loginScreen {
             position: absolute;
             top: 50%;
@@ -43,10 +41,10 @@
             font-size: 20px;
             border: 1px solid #555;
             background-color: #111;
-            color: #0f0; /* Zelený text jako na starých terminálech */
+            color: #0f0;
             text-align: center;
             font-family: 'VT323', monospace;
-            text-transform: lowercase; /* Vše malými písmeny */
+            text-transform: lowercase;
         }
         #playerNameInput::placeholder {
             color: #555;
@@ -65,25 +63,38 @@
             background-color: #222;
             color: #fff;
         }
-
-        /* UPRAVENO: HUD */
         #hud {
             position: absolute;
             top: 15px;
             left: 15px;
             font-size: 22px;
             display: none;
-            color: #0f0; /* Zelený text */
-            text-shadow: 0 0 5px #0f0; /* Lehká záře */
+            color: #0f0;
+            text-shadow: 0 0 5px #0f0;
         }
         #hud b {
             color: #ccc;
             text-shadow: none;
         }
+
+        /* NOVÉ: Styl pro varování před bossem */
+        #bossWarning {
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 60px;
+            color: #f00;
+            text-shadow: 0 0 10px #f00;
+            display: none; /* Skryté na začátku */
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0.5; }
+        }
     </style>
 </head>
 <body>
-    <!-- UPRAVENO: Texty do angličtiny -->
     <div id="loginScreen">
         <h1>void runner</h1>
         <input type="text" id="playerNameInput" placeholder="enter tag" maxlength="12">
@@ -91,7 +102,6 @@
         <button id="playButton">launch</button>
     </div>
 
-    <!-- UPRAVENO: Texty do angličtiny -->
     <div id="hud">
         <div id="score">score: 0</div>
         <div id="integrity">integrity: 100/100</div>
@@ -101,6 +111,9 @@
         <div id="upgrade-damage"></div>
         <div id="upgrade-health"></div>
     </div>
+
+    <!-- NOVÉ: Prvek pro varování -->
+    <div id="bossWarning">threat inbound</div>
 
     <canvas id="gameCanvas"></canvas>
     <script src="/client.js"></script>
