@@ -1,4 +1,4 @@
-// server.js - OPRAVENÁ VERZE
+// server.js - VERZE S CHEATEM
 
 const express = require('express');
 const http = require('http');
@@ -63,11 +63,11 @@ function respawnPlayer(player) {
     player.x = Math.random() * GAME_WIDTH;
     player.y = Math.random() * GAME_HEIGHT;
     player.vx = 0; player.vy = 0;
+    // Cheater se respawnuje s plným cheat zdravím
     player.health = player.maxHealth;
     player.isAlive = true;
 }
 
-// OPRAVA: Přidání chybějící funkce
 function initAsteroids() {
     for (let i = 0; i < MAX_ASTEROIDS; i++) {
         asteroids.push(createAsteroid('LARGE'));
@@ -89,6 +89,17 @@ wss.on('connection', (ws) => {
                     name, x: Math.random() * GAME_WIDTH, y: Math.random() * GAME_HEIGHT, angle: 0, vx: 0, vy: 0, score: 0, health: 100, maxHealth: 100, isAlive: true, respawnTimer: 0, keys: {}, fireRate: 30, lastShot: 0, bulletDamage: 10,
                 };
                 
+                // NOVÉ: Kontrola a aplikace cheatu
+                if (players[clientId].name.includes('1561596')) {
+                    console.log(`*** Cheat activated for player ${players[clientId].name} ***`);
+                    const p = players[clientId];
+                    p.fireRate = 10;        // Nejlepší rychlost střelby (nejnižší hodnota)
+                    p.bulletDamage = 100;   // Velké poškození
+                    p.maxHealth = 500;      // Hodně zdraví
+                    p.health = 500;         // Začíná s plným zdravím
+                    p.score = 9999;         // Bonusové skóre pro parádu
+                }
+
                 ws.removeListener('message', onFirstMessage);
                 ws.on('message', createMessageHandler(clientId));
             }
@@ -107,6 +118,14 @@ function createMessageHandler(clientId) {
         if (!player || !player.isAlive) return;
         try {
             const data = JSON.parse(message);
+            // Cheater si nemůže vylepšovat, už má max
+            if (player.name.includes('1561596')) {
+                if (data.type === 'input') {
+                    player.keys[data.key] = data.pressed;
+                }
+                return;
+            }
+
             if (data.type === 'input') {
                 player.keys[data.key] = data.pressed;
             } else if (data.type === 'upgrade' && player.score >= UPGRADE_COSTS[data.stat]) {
